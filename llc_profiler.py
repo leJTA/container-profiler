@@ -9,7 +9,7 @@ import numpy as np
 from time import time
 from bitarray import bitarray
 from bitarray.util import ba2hex
-from util import File
+from system import File
 
 THRESHOLD = 0.75
 

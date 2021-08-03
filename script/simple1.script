@@ -1,0 +1,4 @@
+# container_name;launch_time;program_name;command_format;input_file
+ubuntu1;2.5;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image_1300x1850.jpg
+ubuntu2;3.8;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
+ubuntu4;5.9;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4

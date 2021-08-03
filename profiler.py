@@ -8,7 +8,7 @@ import llc_profiler
 import bw_profiler
 
 from time import time
-from util import File
+from system import File
 
 
 # Parse command line arguments
@@ -45,7 +45,7 @@ cmd_format = config['main']['command_format']
 input_files = config['main']['input_files'].split(',')
 
 # Read file sizes
-fd = open("tmp.txt", "w")
+fd = open("/tmp/tmp_profiler.txt", "w+")
 for f in input_files:
    ec = container.attach_wait(lxc.attach_run_command, "stat -c %s {}".format(f).split(' '), stdout=fd)
    if ec:
@@ -53,7 +53,7 @@ for f in input_files:
       fd.close()
       sys.exit(ec)
 fd.close()
-fd = open("/tmp/container_profiler/tmp.txt", "r")
+fd = open("/tmp/tmp_profiler.txt", "r")
 input_sizes = fd.readlines()
 files = [File(input_files[i], int(input_sizes[i])) for i in range(0, len(input_files))]
 
@@ -73,13 +73,13 @@ p = llc_profiler.LLCProfiler(program_name, container, cmd_format, files, 11, cor
 #p.run()
 #p.load_data()
 #p.profile_data()
-p.load_profile()
+#p.load_profile()
 
 # Start Bandwidth usage profiling
 p = bw_profiler.BWProfiler(program_name, container, cmd_format, files, core_id, number_of_runs)
 #p.run()
-#p.load_data()
+p.load_data()
 #p.profile_data()
-
+p.load_profile()
 # FINISHED
 print ("[ Finished ]")

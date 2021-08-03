@@ -71,7 +71,8 @@ class BWProfiler:
       min_bw = dict()
       # Determine minimum number LLC ways needed
       for sz in self.results:
-         self.profile[sz] = (self.__get_min_bw_limit(self.results[sz]), self.results[sz][10] - self.results[sz][20])
+         delta = self.results[sz][10] - self.results[sz][20]
+         self.profile[sz] = (self.__get_min_bw_limit(self.results[sz]), delta if delta > 0 else 0)
       with open("profiles/{}.bw.profile".format(self.name), 'w+') as output:
          output.write(str(self.profile))
       print(self.profile)
