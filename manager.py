@@ -11,13 +11,13 @@ import numpy as np
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LinearRegression
-from system import Action, LLC, PlanningEntry, SystemState
+from system import Action, LLC, PlanningEntry, System
 
-NUMBER_OF_NEIGHBORS = 1
-NUMBER_OF_LLC = 2
+KNN_NUMBER_OF_NEIGHBORS = 1
+NUMBER_OF_SOCKETS = 2
 NUMBER_OF_WAYS = 11
 NUMBER_OF_COS = 8
-THRESHOLD = 1
+THRESHOLD = 5
 
 class Manager:
    def __init__(self, script_file):
@@ -26,7 +26,7 @@ class Manager:
       self.predictors = dict() # map <prediction_type, program_name, value>
       self.planning = [] # list <time, action>
       self.scheduler = sched.scheduler(time.time, time.sleep)
-      self.system_state = SystemState(num_llc=NUMBER_OF_LLC, num_ways=NUMBER_OF_WAYS, num_cos=NUMBER_OF_COS)
+      self.system = System(num_sockets=NUMBER_OF_SOCKETS, num_ways=NUMBER_OF_WAYS, num_cos=NUMBER_OF_COS)
 
       file = open(script_file, 'r')
       for line in file.readlines():
@@ -90,7 +90,7 @@ class Manager:
       for pname in self.llc_profiles:
          data = np.array([k for k in self.llc_profiles[pname]]).reshape(-1, 1)
          target = np.array([self.llc_profiles[pname][k] for k in self.llc_profiles[pname]])
-         self.predictors["llc_ways"][pname] = KNeighborsClassifier(NUMBER_OF_NEIGHBORS)
+         self.predictors["llc_ways"][pname] = KNeighborsClassifier(KNN_NUMBER_OF_NEIGHBORS)
          self.predictors["llc_ways"][pname].fit(data, target)
 
       #Bandwidth sensitivity predictor (LinearRegression)
@@ -102,19 +102,26 @@ class Manager:
 
    def execute_action(self, id):
       # Predict values
-      self.planning[id].action.required_ways = self.predictors["llc_ways"][self.planning[id].action.program_name].predict([[self.planning[id].action.input_filesize]])
-      self.planning[id].action.bw_sensitivity = self.predictors["bw_sens"][self.planning[id].action.program_name].predict([[self.planning[id].action.input_filesize]])
-      if (self.planning[id].action.required_ways == 1 and self.planning[id].action.bw_sensitivity > THRESHOLD):
+      action = self.planning[id].action
+      action.required_ways = self.predictors["llc_ways"][action.program_name].predict([[action.input_filesize]])[0]
+      action.bw_sensitivity = self.predictors["bw_sens"][action.program_name].predict([[action.input_filesize]])[0]
+      if (action.bw_sensitivity > THRESHOLD): # self.planning[id].action.required_ways == 1 and 
          self.planning[id].action.is_trashing = True
 
-      #print("predicted values : number of llc ways = {}, bandwidth sensitivity = {}".format(self.planning[id].action.required_ways, self.planning[id].action.bw_sensitivity))
-      print(self.planning[id].action.bw_sensitivity)
-      
-      # TODO launch containers in threads
+      # New action event management function
+      self.system.on_new_action(action)
+
+      c = lxc.Container(action.container_name)
+      ec = os.system("lxc-cgroup -n {} cpuset.cpus {}".format(c.name, self.system.map[action].cpu_id))
+      if ec:
+         print("Unable to set cpuset for container".format(c.name), file=sys.stderr)
+         sys.exit(ec)
+
+      # Action Finished event management function
+      #self.system.on_action_finished(action)
       
 
    def start(self):
-      #self.get_profiles()
-      #self.fit()
-      #self.scheduler.run()
-      pass
+      self.get_profiles()
+      self.fit()
+      self.scheduler.run()

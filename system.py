@@ -7,6 +7,7 @@ from bitarray import bitarray
 from bitarray.util import hex2ba, ba2hex
 
 TRASHING_WAYS = 3
+TRASHING_COS = 3
 
 class File:
    def __init__(self, name, size):
@@ -88,8 +89,6 @@ class LLC:
             assert(c.mask.count() == len(c.ways))
          #print([c.mask for c in self.cos])
 
-
-
    def increase_stress(self, cos_id, load):
       avg_load = load / len(self.cos[cos_id])
       for w in self.cos[cos_id].ways:
@@ -112,12 +111,33 @@ class LLC:
          val += w.stress_value
       return val
 
-class SystemState:
-   def __init__(self, num_llc, num_ways, num_cos):
-      self.llcs = [LLC(i, num_ways=num_ways, num_cos=num_cos) for i in range(0, num_llc)]
+class Socket:
+   def __init__(self, cpus):
+      self.cpus = cpus
+      self.used_cpus = []
+
+class ResAllocation:
+   def __init__(self, llc_id, cpu_id, cos_id):
+      self.llc_id = llc_id
+      self.cpu_id = cpu_id
+      self.cos_id = cos_id
+
+   def __str__(self):
+      return "<llc_id={}, cpu_id={}, cos_id={}>".format(self.llc_id, self.cpu_id, self.cos_id)
+
+   __repr__ = __str__
+
+class System:
+   def __init__(self, num_sockets, num_ways, num_cos):
+      self.sockets = [Socket([]) for i in range(num_sockets)]
+      self.llcs = [LLC(i, num_ways=num_ways, num_cos=num_cos) for i in range(0, num_sockets)]
       self.bw = BW(num_cos=num_cos)
       self.num_cos = num_cos
       self.map = dict()
+
+      if num_sockets == 2:
+         self.sockets[0].cpus = [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38]
+         self.sockets[1].cpus = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39]
 
       for llc in self.llcs:
          for cos in llc.cos:
@@ -131,34 +151,57 @@ class SystemState:
       selected_llc = self.llcs[0]
       if action.is_trashing:
          for llc in self.llcs:
-            if selected_llc.trashing_stress_value() < llc.trashing_stress_value():
+            if selected_llc.trashing_stress_value() > llc.trashing_stress_value():
                selected_llc = llc
       else:
          for llc in self.llcs:
-            if selected_llc.stress_value() < llc.stress_value():
+            if selected_llc.stress_value() > llc.stress_value():
                selected_llc = llc
 
       # Secondly, get the COS giving the lowest(greater than 1) load_per_way
+      if action.is_trashing: # then we take [N - ntrash, N[
+         start = self.num_cos - TRASHING_COS
+         end = self.num_cos
+      else: # else we take [0, N - ntrash[
+         start = 0
+         end = self.num_cos - TRASHING_COS
+
       lpw = -1
-      for i in range(0, self.num_cos):
+      cos_id = start
+      for i in range(start, end):
          current_lpw = (action.required_ways + selected_llc.cos[i].stress_value()) / selected_llc.cos[i].mask.count() # or len(cos.ways)
          if lpw > current_lpw or lpw < 0:
             lpw = current_lpw
-            if lpw < 1:
-               return i
-      return selected_llc.id, i
-
-   def update_system_state(self, llc_id, cos_id, action):
-      cos = self.llcs[llc_id].cos[cos_id]
-      for w in cos.ways:
-         w.stress_value += action.required_ways / cos.mask.count()
+            cos_id = i
+            if lpw <= 1:
+               return selected_llc.id, i
+      return selected_llc.id, cos_id
 
    def on_new_action(self, action):
       llc_id, cos_id = self.get_smart_allocation(action)
-      print(llc_id, cos_id)
-      # TODO allocate cos
-      self.update_system_state(llc_id, cos_id, action)
+      cpu_id = self.sockets[llc_id].cpus.pop()
+      self.sockets[llc_id].used_cpus.append(cpu_id)
+      
+      print("New action requiring {} ways => llc[{}] COS[{}]".format(action.required_ways, llc_id, cos_id))
+      ec = os.system("sudo pqos -I -a \"llc:{}={}\"".format(llc_id, cos_id, cpu_id))
+      if ec:
+         print("Unable to allocate COS{} to CPU{}".format(cos_id, cpu_id), file=sys.stderr)
+         sys.exit(ec)
+      
+      self.map[action] = ResAllocation(llc_id, cpu_id, cos_id)
+      cos = self.llcs[llc_id].cos[cos_id]
+      for w in cos.ways:
+         w.stress_value += action.required_ways / cos.mask.count()
+      #print([(a.required_ways, self.map[a]) for a in self.map])
 
    def on_action_finished(self, action):
-      # TODO update system state
-      pass
+      llc_id = self.map[action].llc_id
+      cpu_id = self.map[action].cpu_id
+      cos_id = self.map[action].cos_id
+      self.sockets[llc_id].cpus.append(cpu_id)
+      self.sockets[llc_id].used_cpus.remove(cpu_id)
+      
+      cos = self.llcs[llc_id].cos[cos_id]
+      for w in cos.ways:
+         w.stress_value -= action.required_ways / cos.mask.count()
+      print([(a.required_ways, self.map[a]) for a in self.map])
