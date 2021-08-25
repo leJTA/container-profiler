@@ -1,8 +1,9 @@
 #!/usr/bin/python3
+import threading
+import logging
+import concurrent.futures
 import lxc
 import sys
-import argparse
-import configparser
 import os
 import ast
 import sched
@@ -12,6 +13,8 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LinearRegression
 from system import Action, LLC, PlanningEntry, System
+
+logging.basicConfig(level=logging.INFO, filename='info.log')
 
 KNN_NUMBER_OF_NEIGHBORS = 1
 NUMBER_OF_SOCKETS = 2
@@ -24,9 +27,12 @@ class Manager:
       self.llc_profiles = dict()
       self.bw_profiles = dict()
       self.predictors = dict() # map <prediction_type, program_name, value>
+      self.system = System(num_sockets=NUMBER_OF_SOCKETS, num_ways=NUMBER_OF_WAYS, num_cos=NUMBER_OF_COS)
       self.planning = [] # list <time, action>
       self.scheduler = sched.scheduler(time.time, time.sleep)
-      self.system = System(num_sockets=NUMBER_OF_SOCKETS, num_ways=NUMBER_OF_WAYS, num_cos=NUMBER_OF_COS)
+      self.futures = []
+      self.executor = concurrent.futures.ThreadPoolExecutor()
+      self.results = dict()
 
       file = open(script_file, 'r')
       for line in file.readlines():
@@ -38,6 +44,8 @@ class Manager:
          program_name = line.split(';')[2]
          command_format = line.split(';')[3]
          input_filename = line.split(';')[4]
+
+         self.results[container_name] = 0
 
          # get file size
          container = lxc.Container(container_name)
@@ -100,28 +108,47 @@ class Manager:
          self.predictors["bw_sens"][pname] = LinearRegression()
          self.predictors["bw_sens"][pname].fit(data, target)
 
+   def exec_action(self, container, action):
+      start = time.time()
+      container.attach_wait(lxc.attach_run_command, action.cmd.split(' '))
+      end = time.time()
+
+      self.system.on_action_finished(action)
+      self.results[action.container_name] = round(end - start, 2)
+      logging.info("[Action on container {} finished] {} in {} seconds : system state = {}".format(action.container_name, action.program_name, end - start, self.system.state()))
+      return end - start
+
    def execute_action(self, id):
       # Predict values
       action = self.planning[id].action
       action.required_ways = self.predictors["llc_ways"][action.program_name].predict([[action.input_filesize]])[0]
       action.bw_sensitivity = self.predictors["bw_sens"][action.program_name].predict([[action.input_filesize]])[0]
-      if (action.bw_sensitivity > THRESHOLD): # self.planning[id].action.required_ways == 1 and 
+      if (action.bw_sensitivity > THRESHOLD): # self.planning[id].action.required_ways == 1 and
          self.planning[id].action.is_trashing = True
 
       # New action event management function
       self.system.on_new_action(action)
-
       c = lxc.Container(action.container_name)
       ec = os.system("lxc-cgroup -n {} cpuset.cpus {}".format(c.name, self.system.map[action].cpu_id))
       if ec:
          print("Unable to set cpuset for container".format(c.name), file=sys.stderr)
          sys.exit(ec)
 
-      # Action Finished event management function
-      #self.system.on_action_finished(action)
-      
+      logging.info("[New action on container {}] {} : system state = {}".format(action, action.container_name, action.program_name, self.system.state()))
+      #TODO launch container in new thread
+      self.futures.append(self.executor.submit(self.exec_action, c, action))
+
+   def save_results(self):
+      fd = open("out.csv", "w")
+      fd.write(",".join([str(self.results[k]) for k in self.results]))
+      fd.close()
 
    def start(self):
       self.get_profiles()
       self.fit()
       self.scheduler.run()
+
+      for future in concurrent.futures.as_completed(self.futures):
+         print(future.result())
+
+      self.save_results()
