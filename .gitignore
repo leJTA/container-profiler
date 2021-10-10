@@ -14,8 +14,9 @@ __pycache__/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Logs
+# Logs and results
 *.log
+*.csv
 
 ### Other folders ###
 profiles/
