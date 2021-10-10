@@ -64,6 +64,7 @@ num_ways = int(config['main']['number_of_ways'])
 core_id = str( container.get_config_item("lxc.cgroup.cpuset.cpus")[0] )
 if core_id == "0":
    print("Warning! The container is pined to the core 0. this is not good for bandwidth profiling!!")
+   exit(1)
 
 # Read the number of runs per case
 number_of_runs = int(config['main']['number_of_runs'])
@@ -71,15 +72,15 @@ number_of_runs = int(config['main']['number_of_runs'])
 # Start LLC usage profiling
 p = llc_profiler.LLCProfiler(program_name, container, cmd_format, files, 11, core_id, number_of_runs)
 #p.run()
-#p.load_data()
+# p.load_data()
 #p.profile_data()
-#p.load_profile()
+# p.load_profile()
 
 # Start Bandwidth usage profiling
 p = bw_profiler.BWProfiler(program_name, container, cmd_format, files, core_id, number_of_runs)
-#p.run()
-p.load_data()
-#p.profile_data()
-p.load_profile()
+p.run()
+# p.load_data()
+p.profile_data()
+# p.load_profile()
 # FINISHED
 print ("[ Finished ]")

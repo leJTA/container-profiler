@@ -11,9 +11,9 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("script_file", help="Script file")
 args = parser.parse_args()
-if not os.path.isfile("script/" + args.script_file) :
-   print("script/{} : File not found".format(args.script_file), file=sys.stderr)
+if not os.path.isfile(args.script_file) :
+   print("{} : File not found".format(args.script_file), file=sys.stderr)
    sys.exit(1)
 
-mngr = manager.Manager("script/" + args.script_file)
+mngr = manager.Manager(args.script_file)
 mngr.start()

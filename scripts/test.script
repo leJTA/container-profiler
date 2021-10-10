@@ -1,0 +1,6 @@
+ubuntu1;0.34;speech_recognition;python3 /home/ubuntu/python/speech_rec.py {};/home/ubuntu/files/podcast_3-4.wav
+ubuntu2;0.46;speech_recognition;python3 /home/ubuntu/python/speech_rec.py {};/home/ubuntu/files/podcast_3-4.wav
+ubuntu3;1.06;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/test_video2.mp4
+ubuntu4;2.91;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/test_video3.mp4
+ubuntu5;2.99;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/test_video3.mp4
+ubuntu6;3.16;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/test_video1.mp4
