@@ -66,6 +66,7 @@ class Manager:
 				sys.exit(ec)
 
 			fd.close()
+
 			fd = open("/tmp/tmp_manager.txt", "r")
 			input_filesize = int(fd.readline().strip())
 			fd.close()
@@ -149,6 +150,13 @@ class Manager:
 	def start(self):
 		self.get_profiles()
 		self.fit()
+
+		for id in range(len(self.planning)):
+			action = self.planning[id].action
+			required_ways = self.predictors["llc_ways"][action.program_name].predict([[action.input_filesize]])[0]
+			print("id = {}, filesize = {}, required_ways = {}".format(id, action.input_filesize, required_ways))
+		return
+
 		self.scheduler.run()
 
 		for future in concurrent.futures.as_completed(self.futures):

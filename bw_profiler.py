@@ -69,7 +69,7 @@ class BWProfiler:
 
    def profile_data(self):
       min_bw = dict()
-      # Determine minimum number LLC ways needed
+      # Determine minimum bandwidth needed
       for sz in self.results:
          delta = self.results[sz][10] - self.results[sz][20]
          self.profile[sz] = (self.__get_min_bw_limit(self.results[sz]), delta if delta > 0 else 0)

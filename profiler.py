@@ -17,13 +17,13 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("config_file", help="Configuration file")
 args = parser.parse_args()
-if not os.path.isfile("config/" + args.config_file) :
-   print("config/{} : File not found".format(args.config_file), file=sys.stderr)
+if not os.path.isfile(args.config_file) :
+   print("{} : File not found".format(args.config_file), file=sys.stderr)
    sys.exit(1)
 
 # Read configuration file
 config = configparser.ConfigParser()
-config.read("config/" + args.config_file)
+config.read(args.config_file)
 
 # Read program name
 program_name = config['main']['program_name']
@@ -71,16 +71,16 @@ number_of_runs = int(config['main']['number_of_runs'])
 
 # Start LLC usage profiling
 p = llc_profiler.LLCProfiler(program_name, container, cmd_format, files, 11, core_id, number_of_runs)
-#p.run()
+p.run()
 # p.load_data()
-#p.profile_data()
+p.profile_data()
 # p.load_profile()
 
 # Start Bandwidth usage profiling
 p = bw_profiler.BWProfiler(program_name, container, cmd_format, files, core_id, number_of_runs)
-p.run()
+#p.run()
 # p.load_data()
-p.profile_data()
+#p.profile_data()
 # p.load_profile()
 # FINISHED
 print ("[ Finished ]")
