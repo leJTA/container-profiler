@@ -11,7 +11,7 @@ from bitarray import bitarray
 from bitarray.util import ba2hex
 from system import File
 
-THRESHOLD = 0.75
+THRESHOLD = 1
 
 class BWProfiler:
    def __init__(self, name, container, cmd_format, files, core_id, number_of_runs):

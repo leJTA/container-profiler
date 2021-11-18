@@ -10,7 +10,7 @@ from bitarray.util import hex2ba, ba2hex
 TRASHING_WAYS = 3
 TRASHING_COS = 3
 NO_CAT = True
-SMART_SOCKET_SELECTION = False
+SMART_SOCKET_SELECTION = True
 
 lock = threading.Lock()
 
@@ -145,7 +145,6 @@ class System:
 			self.sockets[1].cpus = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39]
 		
 		if NO_CAT:
-			# self.sockets[0].cpus = [i for i in range(40)]
 			return
 
 		for llc in self.llcs:
@@ -156,17 +155,10 @@ class System:
 					sys.exit(ec)
 
 	def get_smart_allocation(self, action):
-		selected_llc_id = 0
-		for id in range(len(self.llcs)):
-			if len(self.sockets[id].used_cpus) < len(self.sockets[selected_llc_id].used_cpus):
-				selected_llc_id = id
-		
-		if NO_CAT:
-			return selected_llc_id, 0
-			
-		selected_llc = self.llcs[selected_llc_id]
-		# firstly, get the least stressed cache
+		selected_llc = self.llcs[0]
+
 		if SMART_SOCKET_SELECTION:
+			# Get the least stressed cache
 			selected_llc = self.llcs[0]
 			if action.is_trashing:
 				for llc in self.llcs:
@@ -176,8 +168,12 @@ class System:
 				for llc in self.llcs:
 					if selected_llc.stress_value() > llc.stress_value():
 						selected_llc = llc
+		else:
+			for id in range(len(self.llcs)):
+				if len(self.sockets[id].used_cpus) < len(self.sockets[selected_llc.id].used_cpus):
+					selected_llc = self.llcs[id]
 
-		# Secondly, get the COS giving the lowest(greater than 1) load_per_way
+		# Get the COS giving the lowest(greater than 1) load_per_way
 		if action.is_trashing: # then we take [N - ntrash, N[
 			start = self.num_cos - TRASHING_COS
 			end = self.num_cos
@@ -207,18 +203,19 @@ class System:
 		self.map[action] = ResAllocation(llc_id, cpu_id, cos_id)
 		cos = self.llcs[llc_id].cos[cos_id]
 		
+		lock.acquire()
+		for w in cos.ways:
+			w.stress_value +=  action.required_ways / cos.mask.count()
+		lock.release()
+      
 		if NO_CAT:
 			return
-      
+
 		ec = os.system("sudo pqos -I -a \"llc:{}={}\"".format(cos_id, cpu_id))
 		if ec:
 			print("Unable to allocate COS{} to CPU{}".format(cos_id, cpu_id), file=sys.stderr)
 			sys.exit(ec)
 
-		lock.acquire()
-		for w in cos.ways:
-			w.stress_value +=  action.required_ways / cos.mask.count()
-		lock.release()
 
 	def on_action_finished(self, action):
 		llc_id = self.map[action].llc_id

@@ -139,7 +139,6 @@ class Manager:
 			sys.exit(ec)
 
 		logging.info("[New action] {} on container {} : system state = {}".format(action.program_name, action.container_name, self.system.state()))
-		#TODO launch container in new thread
 		self.futures.append(self.executor.submit(self.exec_action, c, action))
 
 	def save_results(self):
@@ -151,11 +150,13 @@ class Manager:
 		self.get_profiles()
 		self.fit()
 
+		"""
 		for id in range(len(self.planning)):
 			action = self.planning[id].action
 			required_ways = self.predictors["llc_ways"][action.program_name].predict([[action.input_filesize]])[0]
 			print("id = {}, filesize = {}, required_ways = {}".format(id, action.input_filesize, required_ways))
 		return
+		"""
 
 		self.scheduler.run()
 

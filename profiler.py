@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("config_file", help="Configuration file")
 args = parser.parse_args()
-if not os.path.isfile(args.config_file) :
+if not os.path.isfile(args.config_file):
    print("{} : File not found".format(args.config_file), file=sys.stderr)
    sys.exit(1)
 
