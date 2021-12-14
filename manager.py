@@ -27,7 +27,7 @@ class Manager:
 		self.llc_profiles = dict()
 		self.bw_profiles = dict()
 		self.predictors = dict() # map <prediction_type, program_name, value>
-		self.system = System(num_sockets=NUMBER_OF_SOCKETS, num_ways=NUMBER_OF_WAYS, num_cos=NUMBER_OF_COS)
+		self.system = System(num_sockets=1, num_ways=NUMBER_OF_WAYS, num_cos=NUMBER_OF_COS)
 		self.planning = [] # list <time, action>
 		self.scheduler = sched.scheduler(time.time, time.sleep)
 		self.futures = []

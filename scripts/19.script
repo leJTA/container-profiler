@@ -1,0 +1,10 @@
+ubuntu1;0.18;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu2;0.68;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu3;0.84;speech_recognition;python3 /home/ubuntu/python/speech_rec.py {};/home/ubuntu/files/podcast_1-2.wav
+ubuntu4;0.91;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu5;2.14;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu6;2.31;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu7;2.82;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu8;2.92;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu9;2.96;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu10;3.05;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav

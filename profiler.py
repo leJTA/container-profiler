@@ -70,7 +70,7 @@ if core_id == "0":
 number_of_runs = int(config['main']['number_of_runs'])
 
 # Start LLC usage profiling
-p = llc_profiler.LLCProfiler(program_name, container, cmd_format, files, 11, core_id, number_of_runs)
+p = llc_profiler.LLCProfiler(program_name, container, cmd_format, files, num_ways, core_id, number_of_runs)
 p.run()
 # p.load_data()
 p.profile_data()

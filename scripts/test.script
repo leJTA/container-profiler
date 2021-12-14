@@ -1,0 +1,4 @@
+ubuntu1;0.01;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/test_audio/test_audio10.wav
+ubuntu2;0.02;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/test_image/test_image1.jpg
+ubuntu3;0.03;speech_recognition;python3 /home/ubuntu/python/speech_rec.py {};/home/ubuntu/files/podcast_1-2.wav
+ubuntu4;0.04;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/test_video/test_video10.mp4

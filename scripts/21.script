@@ -1,0 +1,20 @@
+ubuntu1;0.5;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
+ubuntu2;0.52;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu3;0.6;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu4;0.63;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu5;0.7;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
+ubuntu6;2.09;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
+ubuntu7;2.96;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu8;3.85;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
+ubuntu9;4.47;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu10;5.86;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu11;5.95;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu12;6.39;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu13;6.81;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu14;6.93;speech_recognition;python3 /home/ubuntu/python/speech_rec.py {};/home/ubuntu/files/podcast_1-2.wav
+ubuntu15;6.93;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu16;7.09;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu17;10.45;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu18;10.52;speech_recognition;python3 /home/ubuntu/python/speech_rec.py {};/home/ubuntu/files/podcast_1-2.wav
+ubuntu19;11.39;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu20;11.68;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg

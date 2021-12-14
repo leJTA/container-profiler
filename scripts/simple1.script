@@ -1,21 +1,5 @@
 # container_name;launch_time;program_name;command_format;input_file
-ubuntu1;1;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
-ubuntu2;1.5;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
-ubuntu3;2;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
-ubuntu4;2.5;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
-ubuntu5;3;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
-ubuntu6;3.5;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
-ubuntu7;4;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
-ubuntu8;4.5;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
-ubuntu9;5;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
-ubuntu10;5.5;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
-ubuntu11;6;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
-ubuntu12;6.5;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
-ubuntu13;7;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
-ubuntu14;7.5;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
-ubuntu15;8;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
-ubuntu16;8.5;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
-ubuntu17;9;effect;python3 /home/ubuntu/python/effects.py {};/home/ubuntu/files/audio.wav
-ubuntu18;9.5;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
-ubuntu19;10;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
-ubuntu20;10.5;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu1;0.0;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu2;0.1;blur;python3 /home/ubuntu/python/blur.py {} 30;/home/ubuntu/files/image.jpg
+ubuntu3;0.2;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4
+ubuntu4;0.3;resize;python3 /home/ubuntu/python/resize.py {};/home/ubuntu/files/video.mp4

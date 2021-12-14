@@ -9,8 +9,8 @@ from bitarray.util import hex2ba, ba2hex
 
 TRASHING_WAYS = 3
 TRASHING_COS = 3
-NO_CAT = True
-SMART_SOCKET_SELECTION = True
+NO_CAT = False
+SMART_SOCKET_SELECTION = False
 
 lock = threading.Lock()
 
@@ -143,6 +143,8 @@ class System:
 		if num_sockets == 2:
 			self.sockets[0].cpus = [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38]
 			self.sockets[1].cpus = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39]
+		else:
+			self.sockets[0].cpus = [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38]
 		
 		if NO_CAT:
 			return

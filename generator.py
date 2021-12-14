@@ -1,6 +1,6 @@
 import random
 
-N = 10
+N = 20
 
 dates = []
 prog_ids = []
@@ -19,7 +19,7 @@ filenames = [
 	"/home/ubuntu/files/video.mp4"
 ]
 
-weights = [0.2, 0.1, 0.1, 0.6] # 10% noisy 80% Cache Sensitive 10% Other
+weights = [0.4, 0.2, 0.1, 0.3]
 #weights = [0.2, 0.2, 0.2, 0.4] # 40% noisy 40% Cache Sensitive 10% Other
 #weights = [0.1, 0.1, 0.1, 0.7] # 70% noisy 20% Cache Sensitive 10% Other
 
