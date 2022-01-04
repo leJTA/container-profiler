@@ -71,8 +71,8 @@ number_of_runs = int(config['main']['number_of_runs'])
 
 # Start LLC usage profiling
 p = llc_profiler.LLCProfiler(program_name, container, cmd_format, files, num_ways, core_id, number_of_runs)
-p.run()
-# p.load_data()
+#p.run()
+p.load_data()
 p.profile_data()
 # p.load_profile()
 
